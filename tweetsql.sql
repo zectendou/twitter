@@ -4,8 +4,7 @@ create table tweet_search(
     tweet_contents varchar(150), ---text---
     tweet_profile varchar(200), ---desctription---
     follower int,---followers_count---
-    tweet_day date, ---parse from created_at---
-    tweet_time time,---parse from created_at---
+    tweet_time timestamp,---parse from created_at---
     link boolean,---parse from url---
     media int,---parse from media---
     favorite_count int,---favorite_count---
