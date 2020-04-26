@@ -6,7 +6,7 @@ import pandas as pd
 
 
 
-def gettweet(keyword, max_id, since_id)
+def gettweet(keyword)
 CK = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx'
 CS = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 AT = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
@@ -14,11 +14,14 @@ ATS = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 twitter = OAuth1Session(CK, CS, AT, ATS)
 max_id = -1
 url = "https://api.twitter.com/1.1/search/tweets.json"
-params = {'q' : keyword, 'count' : 100, 'max_id': max_id}
+params = {'q' : keyword, 'count' : 100, 'max_id': max_id, 'since_id': since_id}
+tweets =  dict.fromkeys(['tweet_id', 'name_id', 'twitter_name','tweet_contents','tweet_profile','follower','tweet_datetime',' favorite_count','quoted','retweet','mention'])
 
 
+for i, tweet in enumerate(tweets):
+    if i >= max_id:
+        break
 
-while(True):
     if max_id != -1:
         params['max_id'] = max_id
         req = twitter.get(url, params = params)
@@ -40,21 +43,11 @@ while(True):
                 tweet_contents  = tweet["full_text"]
                 tweet_profile = tweet["description"]
                 follower = tweet[""]
-                tweettime = datetime.strptime(tweet["created_at"], '%a %b %d %H:%M:%S %z %Y')
                 tweet_datetime = tweettime.datetime('%Y, %m, %d, %H,%M,%S')))
-                if tweets.get("extended_entities"]:
-                    media_list = tweet['extended_entities']["media"]
-                    for media in media_list:
-                        media_type = media_list["type"]
-                        media_url = media_type["expanded_url"]
-                if tweets.get["extended_entities"]:
-                    url_list = tweet["extended_entities"]
-                    for  url in url_list:
-                        link = url_list["url"]
                 favorite_count = tweet["favoriet_count"]
                 quoted = tweet["is_quate_status"]
                 retweet = tweet["retweet_count"]
-                mention = tweet[]"usermention"]
+                mention = tweet["usermention"]
 
 
             max_id = tweets['statuses'][-1]['id']
