@@ -1,13 +1,28 @@
 import json
 import os
 from datetime import datetime
+from time import sleep
+import pandas as pd
 
+
+
+def gettweet(keyword, max_id, since_id)
+CK = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx'
+CS = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+AT = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+ATS = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+twitter = OAuth1Session(CK, CS, AT, ATS)
 max_id = -1
+url = "https://api.twitter.com/1.1/search/tweets.json"
+params = {'q' : keyword, 'count' : 100, 'max_id': max_id}
+
+
 
 while(True):
     if max_id != -1:
-        params['max_id'] = max_id -1
+        params['max_id'] = max_id
         req = twitter.get(url, params = params)
+    
 
         if req.status_code ==200:
             tweets = json.loads(req.text)
