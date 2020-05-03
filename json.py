@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from time import sleep
 import pandas as pd
-
+from requests_oauthlib import OAuth1Session
 
 
 def gettweet(keyword)
@@ -15,7 +15,7 @@ twitter = OAuth1Session(CK, CS, AT, ATS)
 max_id = -1
 url = "https://api.twitter.com/1.1/search/tweets.json"
 params = {'q' : keyword, 'count' : 100, 'max_id': max_id, 'since_id': since_id}
-tweets =  dict.fromkeys(['tweet_id', 'name_id', 'twitter_name','tweet_contents','tweet_profile','follower','tweet_datetime',' favorite_count','quoted','retweet','mention'])
+tweets =  {}
 
 
 for i, tweet in enumerate(tweets):
@@ -32,9 +32,6 @@ for i, tweet in enumerate(tweets):
         
             if tweets['statuses'] ==[]:
                 break
-                
-
-
 
             for tweet in tweets["statuses"]:
                 tweet_id = int(tweet["id_str"])
@@ -42,7 +39,7 @@ for i, tweet in enumerate(tweets):
                 twitter_name = tweet["name"]
                 tweet_contents  = tweet["full_text"]
                 tweet_profile = tweet["description"]
-                follower = tweet[""]
+                follower = tweet["follower"]
                 tweet_datetime = tweettime.datetime('%Y, %m, %d, %H,%M,%S')))
                 favorite_count = tweet["favoriet_count"]
                 quoted = tweet["is_quate_status"]
