@@ -40,7 +40,9 @@ for i, tweet in enumerate(tweets):
                 tweet_contents  = tweet["full_text"]
                 tweet_profile = tweet["description"]
                 follower = tweet["follower"]
-                tweet_datetime = tweettime.datetime('%Y, %m, %d, %H,%M,%S')))
+                dt = datetime.strptime(tweets['created_at'],'%a %b %d %H:%M:%S %z %Y')
+                dt = dt.astimezone()
+                dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
                 favorite_count = tweet["favoriet_count"]
                 quoted = tweet["is_quate_status"]
                 retweet = tweet["retweet_count"]
