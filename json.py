@@ -37,7 +37,7 @@ for i, tweet in enumerate(tweets):
                 tweet_id = int(tweet["id_str"])
                 name_id = tweet["screenname"]
                 twitter_name = tweet["name"]
-                tweet_contents  = tweet["full_text"]
+                tweet_contents  = tweet["text"]
                 tweet_profile = tweet["description"]
                 follower = tweet["follower"]
                 dt = datetime.strptime(tweets['created_at'],'%a %b %d %H:%M:%S %z %Y')
@@ -49,7 +49,7 @@ for i, tweet in enumerate(tweets):
                 mention = tweet["usermention"]
 
 
-            max_id = tweets['statuses'][-1]['id']
+            max_id = tweet_id - 1 
         
         else:
             print('15分待ってね！')
