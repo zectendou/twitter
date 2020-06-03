@@ -15,7 +15,23 @@ twitter = OAuth1Session(CK, CS, AT, ATS)
 max_id = -1
 url = "https://api.twitter.com/1.1/search/tweets.json"
 params = {'q' : keyword, 'count' : 100, 'max_id': max_id, 'since_id': since_id}
+
+#入れ物作り
 tweets =  {}
+tweet_id = []
+name_id = []
+twitter_name = []
+twitter_name = []
+tweet_contents  = []
+tweet_profile = []
+follower = []
+date = []
+favorite_count =[]
+quoted = []
+retweet = []
+mention = []
+
+
 
 
 for i, tweet in enumerate(tweets):
@@ -34,19 +50,20 @@ for i, tweet in enumerate(tweets):
                 break
 
             for tweet in tweets["statuses"]:
-                tweet_id = int(tweet["id_str"])
-                name_id = tweet["screenname"]
-                twitter_name = tweet["name"]
-                tweet_contents  = tweet["text"]
-                tweet_profile = tweet["description"]
-                follower = tweet["follower"]
-                dt = datetime.strptime(tweets['created_at'],'%a %b %d %H:%M:%S %z %Y')
+                tweet_id.append(int(tweet["id_str"]))
+                name_id.append(tweet["screenname"])
+                twitter_name.append(tweet["name"])
+                tweet_contents.append(tweet["text"])
+                tweet_profile.append(tweet["description"])
+                follower.append(tweet["follower"])
+                dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
                 dt = dt.astimezone()
                 dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
-                favorite_count = tweet["favoriet_count"]
-                quoted = tweet["is_quate_status"]
-                retweet = tweet["retweet_count"]
-                mention = tweet["usermention"]
+                date.append(dst)
+                favorite_count.append(tweet["favoriet_count"])
+                quoted.append(tweet["is_quate_status"])
+                retweet.append(tweet["retweet_count"])
+                mention.appendtweet["usermention"])
 
 
             max_id = tweet_id - 1 
