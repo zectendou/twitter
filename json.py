@@ -16,22 +16,6 @@ max_id = -1
 url = "https://api.twitter.com/1.1/search/tweets.json"
 params = {'q' : keyword, 'count' : 100, 'max_id': max_id, 'since_id': since_id}
 
-#入れ物作り
-tweets =  {}
-tweet_id = []
-name_id = []
-twitter_name = []
-tweet_contents  = []
-tweet_profile = []
-follower = []
-tweet_date = []
-favorite_count =[]
-quoted = []
-retweet = []
-mention = []
-
-
-
 
 for i, tweet in enumerate(tweets):
     if i >= max_id:
@@ -52,11 +36,15 @@ for i, tweet in enumerate(tweets):
                 dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
                 dt = dt.astimezone()
                 dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
-                cur.execute("insert into hoge(id, time, contents) values(%s,%s,%s)",#対応させた書き方
+                cur.execute("insert into hoge(id, tweettime, contents, user_id, profile,fav,rt,quate,mention,follwer) values(%s,%s,%s)",
                     (int(tweet["id_str"]),
                     tweet["screen_name"],
                     tweet["name"],
-                    tweet["description"]
+                    tweet["description"],
+                    tweet["favorite_count"],
+                    tweet["is_quote_status"],
+                    tweet["retweet_count"],
+                    tweet["mention"],
                     dst ,
                     tweet["text"],
                     tweet['user']['followers_count']
@@ -64,20 +52,7 @@ for i, tweet in enumerate(tweets):
 
                 
 
-                    tweet_id.append(int(tweet["id_str"]))
-                    name_id.append(tweet["screenname"])
-                    twitter_name.append(tweet["name"])
-                    tweet_contents.append(tweet["text"])
-                    tweet_profile.append(tweet["description"])
-                    follower.append(tweet["follower"])
-                    dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
-                    dt = dt.astimezone()
-                    dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
-                    tweet_date.append(dst)
-                    favorite_count.append(tweet["favoriet_count"])
-                    quoted.append(tweet["is_quate_status"])
-                    retweet.append(tweet["retweet_count"])
-                    mention.appendtweet["usermention"])
+                    
 
 
             max_id = tweet_id - 1 
