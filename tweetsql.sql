@@ -8,5 +8,5 @@ create table tweet_search(
     quoted boolean,---parse from url---
     retweet_count int,---parse from media---
     favorite_count int,---favorite_count---
-    mention boolean,---parse from usermention---
+    mention boolean---parse from usermention---
 );

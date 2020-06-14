@@ -4,6 +4,8 @@ from datetime import datetime
 from time import sleep
 import pandas as pd
 from requests_oauthlib import OAuth1Session
+import psycopg2
+
 
 
 def gettweet(keyword)
@@ -16,10 +18,16 @@ max_id = -1
 url = "https://api.twitter.com/1.1/search/tweets.json"
 params = {'q' : keyword, 'count' : 100, 'max_id': max_id, 'since_id': since_id}
 
+conn = psycopg2.connect("host = localhost port = 5432 dbname = twitter user = postgres password = hogehoge") 
+cur = conn.cursor()
 
 for i, tweet in enumerate(tweets):
     if i >= max_id:
+        cur.close()
+        conn.close()
         break
+        
+
 
     if max_id != -1:
         params['max_id'] = max_id
@@ -36,7 +44,10 @@ for i, tweet in enumerate(tweets):
                 dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
                 dt = dt.astimezone()
                 dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
-                cur.execute("insert into hoge(id, tweettime, contents, user_id, profile,fav,rt,quate,mention,follwer) values(%s,%s,%s)",
+                cur.execute("insert into hoge(tweer_id,\
+                    name_id, tweet_contents, tweet_profile,\
+                        follower_count,retweet_count,\
+                            quoted,mention,follwer) values(%s,%s,%s)",
                     (int(tweet["id_str"]),
                     tweet["screen_name"],
                     tweet["name"],
@@ -49,10 +60,9 @@ for i, tweet in enumerate(tweets):
                     tweet["text"],
                     tweet['user']['followers_count']
                     ))  
-
-                
-
-                    
+                conn.commit
+                cur.close()
+                conn.close()         
 
 
             max_id = tweet_id - 1 
