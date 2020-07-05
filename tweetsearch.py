@@ -29,8 +29,9 @@ def gettweet(keyword):
     cur.execute("select max(tweet_id) from tweet_search")
     last_tweet = cur.fetchone()
 
-    # Twitter仕様による
+    # Twitter仕様:こうすることで最新のツイートから取得可能
     max_id = -1
+    # 取得する後ろ
     since_id = None if last_tweet is None else last_tweet[0]
     url = "https://api.twitter.com/1.1/search/tweets.json"
     params = {'q' : keyword, 'count' : 100}
@@ -51,38 +52,33 @@ def gettweet(keyword):
 
         else:
             # status code 200
-            # search_results, responseとかのほうがいいかも？(お任せ)
-            tweets = json.loads(req.text)
+            # 検索結果のjsonを抽出
+            response = json.loads(req.text)
             
             # Pythonのリストは空だとFalse返してくるので、それを利用
-            if not tweets['statuses']:
+            if not response['statuses']:
                 # 結果なしパターン
                 cur.close()
                 conn.close()
                 print('キーワード\"{}\"にマッチするツイートがなかったようです。').format(keyword)
                 return
 
-            for tweet in tweets["statuses"]:
-                if i >= max_id:
-                    cur.close()
-                    conn.close()
-                    break
-
-                else:
-                    dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
-                    dt = dt.astimezone()
-                    dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
-                    cur.execute("insert into tweet_search(tweer_id,\
-                        name_id, tweet_contents, tweet_profile,\
-                        follower_count,retweet_count,\
-                            quoted,mention,follwer) values",(int(tweet["id_str"]),tweet["screen_name"],tweet["name"],tweet["description"],tweet["favorite_count"],tweet["is_quote_status"],tweet["retweet_count"],tweet["mention"],dst,tweet["text"],tweet['user']['followers_count']
-                    ))  
-                    conn.commit
-                    cur.close()
-                    conn.close()         
-
-
-            max_id = int(tweet["id_str"]) - 1 
+            # 1ツイートごとにDBに追加
+            for tweet, i in enumerate(response["statuses"]):
+                dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
+                dt = dt.astimezone()
+                dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
+                cur.execute("insert into tweet_search(tweer_id,\
+                    name_id, tweet_contents, tweet_profile,\
+                    follower_count,retweet_count,\
+                        quoted,mention,follwer) values",(int(tweet["id_str"]),tweet["screen_name"],tweet["name"],tweet["description"],tweet["favorite_count"],tweet["is_quote_status"],tweet["retweet_count"],tweet["mention"],dst,tweet["text"],tweet['user']['followers_count']
+                ))  
+                conn.commit
+                cur.close()
+                # ここではconnectionクローズしない
+                
+            # 追加終了処理
+            conn.close() 
             
         
 if __name__ == "__main__":
