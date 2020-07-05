@@ -1,13 +1,24 @@
 import json
-import os
+import os, sys
 from datetime import datetime
 from time import sleep
 import pandas as pd
 from requests_oauthlib import OAuth1Session
 import psycopg2
 
+from logging import getLogger, StreamHandler, DEBUG
 
+# DBに取得済みのTweetを検索し、なければTwitter APIで検索を実行
+# keyword: 必須
 def gettweet(keyword):
+    # 入力値のcheck
+    # keyword: null check
+    if not keyword:
+        print('検索用keywordが空です')
+        # returnでも可(この場合大差ない)
+        sys.exit(1)
+
+    # このあたりはenvにまとめてloadenvさせたいところ(オペミス防止)
     CK = '***************'
     CS = '***************'
     AT = '***************'
@@ -17,6 +28,8 @@ def gettweet(keyword):
     cur = conn.cursor()
     cur.execute("select max(tweet_id) from tweet_search")
     last_tweet = cur.fetchone()
+
+    # Twitter仕様による
     max_id = -1
     since_id = None if last_tweet is None else last_tweet[0]
     url = "https://api.twitter.com/1.1/search/tweets.json"
@@ -24,46 +37,39 @@ def gettweet(keyword):
 
     tweets = {}
             
-
     if max_id != -1:
         params['max_id'] = max_id
 
     if since_id is not None:
         params['since_id'] = since_id
         req = twitter.get(url, params = params)
-        
-        if req.status_code == 403:
-            cur.close()
-            conn.close()
-            break
 
+        if req.status_code != 200:
+            # 取得失敗時
+            print('エラーが出たので15分待ってね！\nstatus code: {}').format(req.status_code)
+            sleep(15*60)
 
-        if req.status_code == 503:
-            cur.close()
-            conn.close()
-            break
-        
-        if req.status_code == 404:
-            cur.close()
-            conn.close()
-            break
-
-
-        if req.status_code ==200:
+        else:
+            # status code 200
+            # search_results, responseとかのほうがいいかも？(お任せ)
             tweets = json.loads(req.text)
             
-            if tweets['statuses'] ==[]:
+            # Pythonのリストは空だとFalse返してくるので、それを利用
+            if not tweets['statuses']:
+                # 結果なしパターン
                 cur.close()
                 conn.close()
-                break
+                print('キーワード\"{}\"にマッチするツイートがなかったようです。').format(keyword)
+                return
 
             for tweet in tweets["statuses"]:
                 if i >= max_id:
                     cur.close()
                     conn.close()
-                   　break
+                    break
 
-                else dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
+                else:
+                    dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
                     dt = dt.astimezone()
                     dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
                     cur.execute("insert into tweet_search(tweer_id,\
@@ -78,9 +84,7 @@ def gettweet(keyword):
 
             max_id = int(tweet["id_str"]) - 1 
             
-        else:
-            print('15分待ってね！')
-            sleep(15*60)
+        
 if __name__ == "__main__":
     print("調べたい言葉を入れてね")
     keyword = input()
