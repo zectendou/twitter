@@ -81,3 +81,8 @@ def gettweet(keyword):
         else:
             print('15分待ってね！')
             sleep(15*60)
+if __name__ == "__main__":
+    print("調べたい言葉を入れてね")
+    keyword = input()
+    gettweet(keyword)
+
