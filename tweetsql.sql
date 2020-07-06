@@ -1,5 +1,5 @@
 create table tweet_search(
-    tweet_id int, ---parse from id_str---
+    tweet_id bigint, ---parse from id_str---
     name_id varchar(20), ---screen_name---
     tweet_contents varchar(150), ---text---
     tweet_profile varchar(200), ---desctription---

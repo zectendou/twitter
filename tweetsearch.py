@@ -43,42 +43,49 @@ def gettweet(keyword):
 
     if since_id is not None:
         params['since_id'] = since_id
-        req = twitter.get(url, params = params)
+    
+    req = twitter.get(url, params = params)
 
-        if req.status_code != 200:
+    if req.status_code != 200:
             # 取得失敗時
-            print('エラーが出たので15分待ってね！\nstatus code: {}').format(req.status_code)
-            sleep(15*60)
+        print('エラーが出たので15分待ってね！\nstatus code: {}').format(req.status_code)
+        sleep(15*60)
 
-        else:
+    else:
             # status code 200
             # 検索結果のjsonを抽出
-            response = json.loads(req.text)
+        response = json.loads(req.text)
             
             # Pythonのリストは空だとFalse返してくるので、それを利用
-            if not response['statuses']:
+        if not response['statuses']:
                 # 結果なしパターン
-                cur.close()
-                conn.close()
-                print('キーワード\"{}\"にマッチするツイートがなかったようです。').format(keyword)
-                return
+            cur.close()
+            conn.close()
+            print('キーワード\"{}\"にマッチするツイートがなかったようです。').format(keyword)
+            return
 
             # 1ツイートごとにDBに追加
-            for tweet, i in enumerate(response["statuses"]):
-                dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
-                dt = dt.astimezone()
-                dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
-                cur.execute("insert into tweet_search(tweer_id,\
-                    name_id, tweet_contents, tweet_profile,\
-                    follower_count,retweet_count,\
-                        quoted,mention,follwer) values",(int(tweet["id_str"]),tweet["screen_name"],tweet["name"],tweet["description"],tweet["favorite_count"],tweet["is_quote_status"],tweet["retweet_count"],tweet["mention"],dst,tweet["text"],tweet['user']['followers_count']
-                ))  
-                conn.commit
-                cur.close()
+        for i, tweet in enumerate(response["statuses"]):
+            dt = datetime.strptime(tweet["created_at"],"%a %b %d %H:%M:%S %z %Y")
+            dt = dt.astimezone()
+            dst = datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
+            if not tweet["entities"]["user_mentions"]:
+                mention = False
+            else:
+                mention = True
+            cur.execute("insert into tweet_search(tweer_id,\
+            name_id, tweet_contents, tweet_profile,\
+            follower,tweet_time,quoted,retweet_count,\
+                    favorite_count,mention) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)",\
+                        (int(tweet["id_str"]),tweet["user"]["screen_name"],tweet["text"],tweet["user"]["description"],tweet["user"]["followers_count"],dst,tweet["is_quote_status"],tweet["retweet_count"],mention
+                        )
+            )
+            conn.commit
+            cur.close()
                 # ここではconnectionクローズしない
                 
             # 追加終了処理
-            conn.close() 
+        conn.close() 
             
         
 if __name__ == "__main__":
