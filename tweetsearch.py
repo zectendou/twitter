@@ -76,8 +76,8 @@ def gettweet(keyword):
             cur.execute("insert into tweet_search(tweer_id,\
             name_id, tweet_contents, tweet_profile,\
             follower,tweet_time,quoted,retweet_count,\
-                    favorite_count,mention) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)",\
-                        (int(tweet["id_str"]),tweet["user"]["screen_name"],tweet["text"],tweet["user"]["description"],tweet["user"]["followers_count"],dst,tweet["is_quote_status"],tweet["retweet_count"],mention
+                    favorite_count,mention) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",\
+                        (tweet["id_str"],tweet["user"]["screen_name"],tweet["text"],tweet["user"]["description"],tweet["user"]["followers_count"],dst,tweet["is_quote_status"],tweet["retweet_count"],mention
                         )
             )
             conn.commit
