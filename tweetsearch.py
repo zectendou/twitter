@@ -39,7 +39,7 @@ def gettweet(keyword):
     if old_tweet is None:
         max_id = - 1
     else:
-        max_id = old_tweet
+        max_id = old_tweet[0] - 1
 
     url = "https://api.twitter.com/1.1/search/tweets.json"
     params = {'q' : keyword, 'count' : 100}
@@ -89,11 +89,13 @@ def gettweet(keyword):
                         )
             )
             conn.commit
-            cur.close()
+            
                 # ここではconnectionクローズしない
                 
             # 追加終了処理
-        conn.close() 
+    
+    cur.close()
+    conn.close() 
             
         
 if __name__ == "__main__":
