@@ -26,17 +26,25 @@ def gettweet(keyword):
     twitter = OAuth1Session(CK, CS, AT, ATS)
     conn = psycopg2.connect("host = localhost port = 5432 dbname = twitter user = postgres password = hoge") 
     cur = conn.cursor()
+    
+    #since_id
     cur.execute("select max(tweet_id) from tweet_search")
     last_tweet = cur.fetchone()
-
-    # Twitter仕様:こうすることで最新のツイートから取得可能
-    max_id = -1
-    # 取得する後ろ
     since_id = None if last_tweet is None else last_tweet[0]
+    
+    #max_id
+    cur.execute("select min(tweet_id) from tweet_search")
+    old_tweet = cur.fetchone()
+    
+    if old_tweet is None:
+        max_id = - 1
+    else:
+        max_id = old_tweet
+
     url = "https://api.twitter.com/1.1/search/tweets.json"
     params = {'q' : keyword, 'count' : 100}
 
-    tweets = {}
+    response = {}
             
     if max_id != -1:
         params['max_id'] = max_id
@@ -61,7 +69,7 @@ def gettweet(keyword):
                 # 結果なしパターン
             cur.close()
             conn.close()
-            print('キーワード\"{}\"にマッチするツイートがなかったようです。').format(keyword)
+            print('キーワードにマッチするツイートがなかったようです。')
             return
 
             # 1ツイートごとにDBに追加
