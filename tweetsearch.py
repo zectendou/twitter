@@ -26,20 +26,20 @@ def gettweet(keyword):
     twitter = OAuth1Session(CK, CS, AT, ATS)
     conn = psycopg2.connect("host = localhost port = 5432 dbname = twitter user = postgres password = hoge") 
     cur = conn.cursor()
-    
-    #since_id
-    cur.execute("select max(tweet_id) from tweet_search")
-    last_tweet = cur.fetchone()
-    since_id = None if last_tweet is None else last_tweet[0]
+    cur.execute("select max(tweet_id),min(tweet_id) from tweet_search")
+    max_and_since = cur.fetchall()
     
     #max_id
-    cur.execute("select min(tweet_id) from tweet_search")
-    old_tweet = cur.fetchone()
-    
-    if old_tweet is None:
+    if max_and_since[0][1] is None:
         max_id = - 1
     else:
-        max_id = old_tweet[0] - 1
+        max_id = max_and_since[0][1] - 1
+    
+    #since_id
+    if max_and_since[0][0] is None:
+        since_id = None
+    else:
+        since_id = max_and_since[0][0]
 
     url = "https://api.twitter.com/1.1/search/tweets.json"
     params = {'q' : keyword, 'count' : 100}

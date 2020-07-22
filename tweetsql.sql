@@ -1,8 +1,8 @@
-create table tweet_search(
+create table curel(
     ID bigint,
     tweet_id bigint, ---parse from id_str---
     name_id varchar(20), ---screen_name---
-    tweet_contents varchar(150), ---text---
+    tweet_contents varchar(500), ---text---
     tweet_profile varchar(200), ---desctription---
     follower int,---followers_count---
     tweet_time timestamp,---parse from created_at---
